@@ -1,36 +1,46 @@
 import Notiflix from 'notiflix';
-// import fetch from './js/fetch';
+import GetImagesApi from './js/fetch';
 import axios from 'axios';
 
-const DEBOUNCE_DELAY = 300;
+// let input = '';
+
+const getImagesApi = new GetImagesApi();
 
 const refs = {
   form: document.querySelector('.search-form'),
-  input: document.querySelector('input[name="searchQuery"]'),
+  loadMoreBtn: document.querySelector('.load-more'),
   div: document.querySelector('.gallery'),
 };
 
 refs.form.addEventListener('submit', onFormSubmit);
+refs.loadMoreBtn.addEventListener('click', onLoadMore);
 
 // ==================================загрузка изображений
 
-axios.defaults.baseURL = 'https://pixabay.com/api/';
+// axios.defaults.baseURL = 'https://pixabay.com/api/';
 
-const KEY = '24441832-e1f7ed32578d6107b72c2a05f';
+// const KEY = '24441832-e1f7ed32578d6107b72c2a05f';
 
-const getImages = async something => {
-  const response = await axios.get(
-    `?per_page=40&page=1&key=${KEY}&q=${something}&image_type=photo&orientation=horizontal&safesearch=true`
-  );
-  console.log(response.data);
-  return response.data;
-};
+// async function getImages(something) {
+//   const response = await axios.get(
+//     `?per_page=40&page=1&key=${KEY}&q=${something}&image_type=photo&orientation=horizontal&safesearch=true`
+//   );
+//   console.log(response.data);
+//   return response.data;
+// }
 
 //================================== отпраувка формі
 function onFormSubmit(event) {
   event.preventDefault();
-  const input = event.currentTarget.elements.searchQuery.value;
-  getImages(input)
+
+  clearContainer();
+
+  getImagesApi.input = event.currentTarget.elements.searchQuery.value;
+
+  getImagesApi.resetPage();
+
+  getImagesApi
+    .getImages()
     .then(data => {
       renderImage(data);
 
@@ -40,6 +50,15 @@ function onFormSubmit(event) {
           `Sorry, there are no images matching your search query. Please try again.`
         );
       }
+    })
+    .catch(error => console.log(error));
+}
+
+function onLoadMore() {
+  getImagesApi
+    .getImages()
+    .then(data => {
+      renderImage(data);
     })
     .catch(error => console.log(error));
 }
@@ -79,4 +98,8 @@ function renderImage({ hits }) {
   console.log(markup);
 
   refs.div.insertAdjacentHTML('beforeend', markup);
+}
+
+function clearContainer() {
+  refs.div.innerHTML = '';
 }
