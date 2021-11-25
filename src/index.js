@@ -1,6 +1,10 @@
+import SimpleLightbox from 'simplelightbox';
+
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
 import Notiflix from 'notiflix';
 import GetImagesApi from './js/fetch';
-import axios from 'axios';
+import { throttle } from 'lodash';
 
 // let input = '';
 
@@ -13,7 +17,12 @@ const refs = {
 };
 
 refs.form.addEventListener('submit', onFormSubmit);
-refs.loadMoreBtn.addEventListener('click', onLoadMore);
+// refs.loadMoreBtn.addEventListener('click', onLoadMore);
+
+(() => {
+  window.addEventListener('scroll', throttle(checkPosition, 800));
+  window.addEventListener('resize', throttle(checkPosition, 800));
+})();
 
 // ==================================загрузка изображений
 
@@ -35,7 +44,10 @@ function onFormSubmit(event) {
 
   clearContainer();
 
-  getImagesApi.input = event.currentTarget.elements.searchQuery.value;
+  getImagesApi.input = event.currentTarget.elements.searchQuery.value.trim();
+  if (getImagesApi.input === '') {
+    return;
+  }
 
   getImagesApi.resetPage();
 
@@ -54,29 +66,29 @@ function onFormSubmit(event) {
     .catch(error => console.log(error));
 }
 
-function onLoadMore() {
-  getImagesApi
-    .getImages()
-    .then(data => {
-      renderImage(data);
-    })
-    .catch(error => console.log(error));
-}
+// function onLoadMore() {
+//   getImagesApi
+//     .getImages()
+//     .then(data => {
+//       renderImage(data);
+//     })
+//     .catch(error => console.log(error));
+// }
 
 function renderImage({ hits }) {
-  let markup = hits
+  const markup = hits
     .map(
       ({
         webformatURL,
-        largeImageUR,
+        largeImageURL,
         tags,
         likes,
         views,
         comments,
         downloads,
-      }) => `
+      }) => `<a href="${largeImageURL}">
     <div class="photo-card">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+  <img src="${webformatURL}" alt="${tags}" loading="lazy" width="392" height="264" />
   <div class="info">
     <p class="info-item">
       <b>${likes}</b>
@@ -91,15 +103,41 @@ function renderImage({ hits }) {
       <b>${downloads}</b>
     </p>
   </div>
-</div>`
+</div>
+</a>`
     )
     .join('');
 
-  console.log(markup);
+  // console.log(markup);
 
   refs.div.insertAdjacentHTML('beforeend', markup);
+  let gallery = new SimpleLightbox('.gallery a');
+  console.log(gallery);
+  gallery.refresh();
 }
 
 function clearContainer() {
   refs.div.innerHTML = '';
+}
+
+// ============================================================================
+
+function checkPosition() {
+  const height = document.body.offsetHeight;
+  const screenHeight = window.innerHeight;
+
+  const scrolled = window.scrollY;
+
+  const threshold = height - screenHeight / 4;
+
+  const position = scrolled + screenHeight;
+
+  if (position >= threshold) {
+    getImagesApi
+      .getImages()
+      .then(data => {
+        renderImage(data);
+      })
+      .catch(error => console.log(error));
+  }
 }
