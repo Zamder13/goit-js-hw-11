@@ -106,7 +106,7 @@ function renderImage({ hits }) {
         views,
         comments,
         downloads,
-      }) => `<a href="${largeImageURL}" class="link list">
+      }) => `<a href="${largeImageURL}" class="link">
     <div class="photo-card">
   <img src="${webformatURL}" alt="${tags}" loading="lazy" class="gallery__image" />
   <div class="info">
