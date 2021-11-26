@@ -24,8 +24,8 @@ export default class GetImagesApi {
 
   resetPage() {
     this.page = 1;
-    }
-    
+  }
+
   get input() {
     return this.searchQuery;
   }
