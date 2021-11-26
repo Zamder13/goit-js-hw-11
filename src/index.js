@@ -5,10 +5,12 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import Notiflix from 'notiflix';
 import GetImagesApi from './js/getImagesAPI';
 import { throttle } from 'lodash';
-import LoadMoreBtn from './js/load-more-btn';
+// ==================================================импрот для копки загрузки
+// import LoadMoreBtn from './js/load-more-btn';
 
 const getImagesApi = new GetImagesApi();
 
+// =================================================Функция загрузки
 // const loadMoreBtn = new LoadMoreBtn({
 //   selector: '[data-action="load-more"]',
 //   hidden: true,
@@ -22,9 +24,9 @@ const refs = {
 };
 
 refs.form.addEventListener('submit', onFormSubmit);
-// refs.loadMoreBtn.addEventListener('click', onLoadMore);
+
 // loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
-// ============================================================================================================
+// ====================================================================== Кнопка загрузки
 (() => {
   window.addEventListener('scroll', throttle(checkPosition, 400));
   window.addEventListener('resize', throttle(checkPosition, 400));
@@ -51,7 +53,7 @@ function checkPosition() {
 }
 // ==================================================================================================================================
 
-//================================== отпраувка формі
+//================================== отправка формы
 function onFormSubmit(event) {
   event.preventDefault();
 
