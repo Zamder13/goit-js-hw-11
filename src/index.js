@@ -43,6 +43,9 @@ function checkPosition() {
   const position = scrolled + screenHeight;
 
   if (position >= threshold) {
+    if (getImagesApi.input === '') {
+      return;
+    }
     getImagesApi
       .getImages()
       .then(data => {
