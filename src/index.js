@@ -73,7 +73,6 @@ function onFormSubmit(event) {
       renderImage(data);
       // loadMoreBtn.enable();
 
-      console.log(data);
       if (data.hits.length === 0) {
         Notiflix.Notify.failure(
           `Sorry, there are no images matching your search query. Please try again.`
@@ -137,7 +136,7 @@ function renderImage({ hits }) {
     captionDelay: '250',
     focus: false,
   });
-  console.log(gallery);
+
   gallery.refresh();
 }
 
